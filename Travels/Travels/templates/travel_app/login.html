@@ -1,0 +1,44 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Sign In — WanderLux{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-bg">
+        <img src="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=1200" alt="bg">
+        <div class="auth-overlay"></div>
+    </div>
+    <div class="auth-form-wrap">
+        <a href="{% url 'home' %}" class="auth-logo">Wander<span>Lux</span></a>
+        <h2>Welcome Back</h2>
+        <p class="auth-sub">Sign in to continue your journey</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Your username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Your password" required>
+            </div>
+            <button type="submit" class="btn btn-gold" style="width:100%;margin-top:8px;">Sign In</button>
+        </form>
+        <div class="auth-footer">
+            Don't have an account? <a href="{% url 'register' %}">Create one</a>
+        </div>
+    </div>
+</div>
+<style>
+.auth-page{display:grid;grid-template-columns:1fr 480px;min-height:100vh;}
+.auth-bg{position:relative;overflow:hidden;}
+.auth-bg img{width:100%;height:100%;object-fit:cover;}
+.auth-overlay{position:absolute;inset:0;background:rgba(13,13,13,0.4);}
+.auth-form-wrap{background:var(--dark-2);padding:60px 48px;display:flex;flex-direction:column;justify-content:center;}
+.auth-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--white);text-decoration:none;margin-bottom:40px;display:block;}
+.auth-logo span{color:var(--gold);}
+.auth-form-wrap h2{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;margin-bottom:8px;}
+.auth-sub{color:var(--gray);font-size:14px;margin-bottom:36px;}
+.auth-footer{margin-top:24px;text-align:center;color:var(--gray);font-size:14px;}
+.auth-footer a{color:var(--gold);text-decoration:none;}
+@media(max-width:768px){.auth-page{grid-template-columns:1fr;}.auth-bg{display:none;}.auth-form-wrap{padding:100px 24px 40px;}}
+</style>
+{% endblock %}

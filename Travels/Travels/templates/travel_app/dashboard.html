@@ -1,0 +1,72 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}My Dashboard — WanderLux{% endblock %}
+{% block content %}
+<div style="padding-top:80px;">
+<section class="section section-dark">
+    <div class="dash-header">
+        <div>
+            <span class="section-tag">Welcome Back</span>
+            <h1 style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;">{{ user.first_name|default:user.username }}'s <em>Dashboard</em></h1>
+        </div>
+        <a href="{% url 'edit_profile' %}" class="btn btn-outline"><i class="fas fa-user-edit"></i> Edit Profile</a>
+    </div>
+
+    <div class="dash-stats">
+        <div class="dash-stat"><div class="ds-num">{{ total_bookings }}</div><div class="ds-label">Total Bookings</div></div>
+        <div class="dash-stat"><div class="ds-num" style="color:#52b788;">{{ confirmed }}</div><div class="ds-label">Confirmed</div></div>
+        <div class="dash-stat"><div class="ds-num" style="color:var(--gold);">{{ pending }}</div><div class="ds-label">Pending</div></div>
+        <div class="dash-stat"><div class="ds-num" style="color:var(--gray);">{{ completed }}</div><div class="ds-label">Completed</div></div>
+    </div>
+
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:32px;margin-bottom:24px;">My Bookings</h2>
+    {% if bookings %}
+    <div class="bookings-table">
+        <table>
+            <thead>
+                <tr><th>Package</th><th>Destination</th><th>Travel Date</th><th>Travelers</th><th>Total</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td><strong>{{ booking.package.title }}</strong></td>
+                    <td style="color:var(--gray);">{{ booking.package.destination.name }}</td>
+                    <td>{{ booking.travel_date|date:"M d, Y" }}</td>
+                    <td>{{ booking.num_travelers }}</td>
+                    <td style="color:var(--gold);font-weight:600;">₹{{ booking.total_price|floatformat:0 }}</td>
+                    <td>
+                        <span class="badge {% if booking.status == 'confirmed' %}badge-green{% elif booking.status == 'pending' %}badge-gold{% elif booking.status == 'cancelled' %}badge-red{% else %}badge-gray{% endif %}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if booking.status == 'pending' %}
+                        <a href="{% url 'cancel_booking' booking.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Cancel this booking?')">Cancel</a>
+                        {% else %}—{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:60px;background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);">
+        <i class="fas fa-suitcase" style="font-size:40px;color:var(--gray);margin-bottom:16px;display:block;opacity:0.4;"></i>
+        <p style="color:var(--gray);">No bookings yet.</p>
+        <a href="{% url 'packages' %}" class="btn btn-gold" style="margin-top:16px;">Explore Packages</a>
+    </div>
+    {% endif %}
+</section>
+</div>
+<style>
+.dash-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px;}
+.dash-stat{padding:24px;background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);text-align:center;}
+.ds-num{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;color:var(--gold);}
+.ds-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:4px;}
+.bookings-table{overflow-x:auto;}
+.bookings-table table{width:100%;border-collapse:collapse;}
+.bookings-table th{text-align:left;padding:12px 16px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);border-bottom:1px solid rgba(255,255,255,0.08);}
+.bookings-table td{padding:16px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;}
+.bookings-table tr:hover td{background:rgba(255,255,255,0.02);}
+</style>
+{% endblock %}

@@ -1,0 +1,344 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}My Bookings — WanderLux{% endblock %}
+{% block content %}
+<div style="padding-top: 80px;">
+
+
+<section class="bookings-header">
+    <div class="bh-bg">
+        <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800" alt="bookings bg">
+        <div class="bh-overlay"></div>
+    </div>
+    <div class="bh-content">
+        <span class="section-tag">Your Travel History</span>
+        <h1>My <em>Bookings</em></h1>
+        <p>Track, manage, and review all your journeys in one place.</p>
+    </div>
+</section>
+
+
+<section class="section section-dark" style="padding-bottom: 0;">
+    <div class="bk-stats">
+        <div class="bk-stat">
+            <i class="fas fa-suitcase-rolling"></i>
+            <div class="bks-num">{{ bookings|length }}</div>
+            <div class="bks-label">Total Bookings</div>
+        </div>
+        <div class="bk-stat">
+            <i class="fas fa-check-circle" style="color:#52b788;"></i>
+            <div class="bks-num" style="color:#52b788;">{{ bookings|dictsort:"status"|dictsortreversed:"status"|length }}</div>
+            <div class="bks-label">Confirmed</div>
+        </div>
+        <div class="bk-stat">
+            <i class="fas fa-clock" style="color:var(--gold);"></i>
+            <div class="bks-num" style="color:var(--gold);">
+                {% with pending_count=0 %}
+                    {% for b in bookings %}{% if b.status == 'pending' %}{{ forloop.counter0|add:"1" }}{% endif %}{% endfor %}
+                {% endwith %}
+            </div>
+            <div class="bks-label">Pending</div>
+        </div>
+        <div class="bk-stat">
+            <i class="fas fa-flag-checkered" style="color:#9b59b6;"></i>
+            <div class="bks-num" style="color:#9b59b6;">
+                {% for b in bookings %}{% if b.status == 'completed' %}1{% endif %}{% endfor %}
+            </div>
+            <div class="bks-label">Completed</div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section section-dark">
+
+
+    <div class="status-tabs" id="statusTabs">
+        <button class="stab active" data-filter="all">All Bookings</button>
+        <button class="stab" data-filter="pending">Pending</button>
+        <button class="stab" data-filter="confirmed">Confirmed</button>
+        <button class="stab" data-filter="completed">Completed</button>
+        <button class="stab" data-filter="cancelled">Cancelled</button>
+    </div>
+
+    {% if bookings %}
+    <div class="bk-list" id="bookingList">
+        {% for booking in bookings %}
+        <div class="bk-card" data-status="{{ booking.status }}">
+
+            <div class="bk-thumb">
+                {% if booking.package.image_url %}
+                <img src="{{ booking.package.image_url }}" alt="{{ booking.package.title }}">
+                {% else %}
+                <div class="bk-thumb-placeholder"><i class="fas fa-plane"></i></div>
+                {% endif %}
+            </div>
+
+
+            <div class="bk-main">
+                <div class="bk-top">
+                    <div>
+                        <div class="bk-pkg-name">{{ booking.package.title }}</div>
+                        <div class="bk-dest">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ booking.package.destination.name }}, {{ booking.package.destination.country }}
+                        </div>
+                    </div>
+                    <span class="badge {% if booking.status == 'confirmed' %}badge-green{% elif booking.status == 'pending' %}badge-gold{% elif booking.status == 'cancelled' %}badge-red{% elif booking.status == 'completed' %}badge-purple{% else %}badge-gray{% endif %}">
+                        {% if booking.status == 'confirmed' %}<i class="fas fa-check"></i>
+                        {% elif booking.status == 'pending' %}<i class="fas fa-clock"></i>
+                        {% elif booking.status == 'cancelled' %}<i class="fas fa-times"></i>
+                        {% elif booking.status == 'completed' %}<i class="fas fa-flag-checkered"></i>
+                        {% endif %}
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="bk-meta-row">
+                    <div class="bk-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <div class="bk-meta-label">Travel Date</div>
+                            <div class="bk-meta-val">{{ booking.travel_date|date:"D, M d Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="bk-meta-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <div class="bk-meta-label">Travelers</div>
+                            <div class="bk-meta-val">{{ booking.num_travelers }} Person{{ booking.num_travelers|pluralize }}</div>
+                        </div>
+                    </div>
+                    <div class="bk-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <div class="bk-meta-label">Duration</div>
+                            <div class="bk-meta-val">{{ booking.package.duration_days }} Days</div>
+                        </div>
+                    </div>
+                    <div class="bk-meta-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <div>
+                            <div class="bk-meta-label">Booked On</div>
+                            <div class="bk-meta-val">{{ booking.booking_date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if booking.special_requests %}
+                <div class="bk-note">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>{{ booking.special_requests }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+
+            <div class="bk-right">
+                <div class="bk-price">₹{{ booking.total_price|floatformat:0 }}</div>
+                <div class="bk-price-note">Total amount</div>
+                <div class="bk-price-break">₹{{ booking.package.price|floatformat:0 }} × {{ booking.num_travelers }}</div>
+
+                <div class="bk-actions">
+                    <a href="{% url 'package_detail' booking.package.pk %}" class="btn btn-outline btn-sm">
+                        <i class="fas fa-eye"></i> View Package
+                    </a>
+                    {% if booking.status == 'pending' %}
+                    <button class="btn btn-danger btn-sm cancel-btn"
+                            data-url="{% url 'cancel_booking' booking.pk %}"
+                            data-name="{{ booking.package.title }}">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    {% elif booking.status == 'completed' %}
+                    <a href="{% url 'package_detail' booking.package.pk %}#reviews" class="btn btn-dark btn-sm">
+                        <i class="fas fa-star"></i> Review
+                    </a>
+                    {% endif %}
+                </div>
+
+
+                <div class="bk-ref">Ref # WL-{{ booking.pk|stringformat:"06d" }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    <div class="filter-empty" id="filterEmpty" style="display:none;">
+        <i class="fas fa-filter"></i>
+        <p>No bookings with this status.</p>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-suitcase-rolling"></i></div>
+        <h3>No Trips Yet</h3>
+        <p>You haven't made any bookings yet. Start exploring our curated packages and plan your next adventure!</p>
+        <a href="{% url 'packages' %}" class="btn btn-gold" style="margin-top:24px;">
+            <i class="fas fa-search"></i> Browse Packages
+        </a>
+    </div>
+    {% endif %}
+
+    {% if bookings %}
+    <div style="text-align:center;margin-top:40px;">
+        <a href="{% url 'packages' %}" class="btn btn-outline">
+            <i class="fas fa-plus"></i> Book Another Trip
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+
+<div class="modal-backdrop" id="cancelModal" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3>Cancel Booking?</h3>
+        <p id="cancelModalText">Are you sure you want to cancel this booking? This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn btn-dark" id="modalClose">Keep Booking</button>
+            <form method="post" id="cancelForm">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, Cancel It</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<style>
+/* Header */
+.bookings-header { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+.bh-bg { position: absolute; inset: 0; }
+.bh-bg img { width: 100%; height: 100%; object-fit: cover; }
+.bh-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(13,13,13,0.5), rgba(13,13,13,0.9)); }
+.bh-content { position: relative; z-index: 2; }
+.bh-content h1 { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; color: white; margin: 10px 0 8px; }
+.bh-content h1 em { font-style: italic; color: var(--gold); }
+.bh-content p { color: rgba(255,255,255,0.65); font-size: 15px; }
+
+/* Stats */
+.bk-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 48px; }
+.bk-stat { padding: 28px 24px; background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); text-align: center; }
+.bk-stat i { font-size: 22px; color: var(--gold); margin-bottom: 12px; display: block; }
+.bks-num { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 600; color: var(--gold); line-height: 1; }
+.bks-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-top: 6px; }
+
+/* Tabs */
+.status-tabs { display: flex; gap: 4px; margin-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.stab { padding: 12px 22px; background: none; border: none; color: var(--gray); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.25s; }
+.stab:hover { color: var(--white); }
+.stab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* Booking cards */
+.bk-list { display: flex; flex-direction: column; gap: 20px; }
+.bk-card { display: grid; grid-template-columns: 120px 1fr auto; gap: 28px; background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); padding: 24px; transition: border-color 0.3s; }
+.bk-card:hover { border-color: rgba(201,168,76,0.2); }
+.bk-card.hidden { display: none; }
+
+/* Thumb */
+.bk-thumb { width: 120px; height: 120px; overflow: hidden; flex-shrink: 0; }
+.bk-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bk-thumb-placeholder { width: 100%; height: 100%; background: var(--dark-3); display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--gray); opacity: 0.5; }
+
+/* Main */
+.bk-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
+.bk-pkg-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 5px; }
+.bk-dest { font-size: 13px; color: var(--gray); }
+.bk-dest i { color: var(--gold); margin-right: 5px; font-size: 11px; }
+
+/* Meta row */
+.bk-meta-row { display: flex; gap: 32px; flex-wrap: wrap; }
+.bk-meta-item { display: flex; align-items: flex-start; gap: 10px; }
+.bk-meta-item > i { color: var(--gold); font-size: 13px; margin-top: 3px; width: 14px; }
+.bk-meta-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); margin-bottom: 3px; }
+.bk-meta-val { font-size: 13px; color: var(--white); font-weight: 500; }
+
+/* Note */
+.bk-note { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; padding: 10px 14px; background: rgba(201,168,76,0.06); border-left: 2px solid rgba(201,168,76,0.3); font-size: 13px; color: var(--gray); }
+.bk-note i { color: var(--gold); margin-top: 2px; flex-shrink: 0; }
+
+/* Right side */
+.bk-right { display: flex; flex-direction: column; align-items: flex-end; min-width: 160px; }
+.bk-price { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: var(--gold); line-height: 1; }
+.bk-price-note { font-size: 11px; color: var(--gray); margin-top: 3px; }
+.bk-price-break { font-size: 12px; color: rgba(154,154,154,0.6); margin-top: 2px; margin-bottom: 20px; }
+.bk-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.bk-actions .btn { text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.bk-ref { margin-top: 12px; font-size: 11px; color: rgba(154,154,154,0.4); letter-spacing: 1px; font-family: monospace; }
+
+/* Badge extras */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+.badge-purple { background: rgba(155,89,182,0.15); color: #c39bd3; border: 1px solid rgba(155,89,182,0.3); }
+
+/* Empty states */
+.empty-state { text-align: center; padding: 80px 40px; background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); }
+.empty-icon { font-size: 56px; color: var(--gold); opacity: 0.3; margin-bottom: 20px; }
+.empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 32px; margin-bottom: 12px; }
+.empty-state p { color: var(--gray); font-size: 15px; max-width: 400px; margin: 0 auto; line-height: 1.7; }
+.filter-empty { text-align: center; padding: 60px; color: var(--gray); }
+.filter-empty i { font-size: 36px; opacity: 0.25; display: block; margin-bottom: 16px; }
+
+/* Cancel modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-box { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.1); padding: 48px 40px; max-width: 420px; width: 90%; text-align: center; }
+.modal-icon { font-size: 40px; color: #e74c3c; margin-bottom: 20px; }
+.modal-box h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; margin-bottom: 12px; }
+.modal-box p { color: var(--gray); font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
+.modal-actions { display: flex; gap: 12px; justify-content: center; }
+.modal-actions form { margin: 0; }
+
+@media (max-width: 768px) {
+    .bk-card { grid-template-columns: 1fr; }
+    .bk-thumb { width: 100%; height: 180px; }
+    .bk-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 16px; }
+    .bk-stats { grid-template-columns: repeat(2, 1fr); }
+    .bk-meta-row { gap: 16px; }
+    .status-tabs { overflow-x: auto; }
+}
+</style>
+
+<script>
+
+const tabs = document.querySelectorAll('.stab');
+const cards = document.querySelectorAll('.bk-card');
+const filterEmpty = document.getElementById('filterEmpty');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const filter = tab.dataset.filter;
+        let visible = 0;
+        cards.forEach(card => {
+            const match = filter === 'all' || card.dataset.status === filter;
+            card.classList.toggle('hidden', !match);
+            if (match) visible++;
+        });
+        filterEmpty.style.display = visible === 0 ? 'block' : 'none';
+    });
+});
+
+
+const modal = document.getElementById('cancelModal');
+const cancelForm = document.getElementById('cancelForm');
+const modalText = document.getElementById('cancelModalText');
+
+document.querySelectorAll('.cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        cancelForm.action = btn.dataset.url;
+        modalText.textContent = `Are you sure you want to cancel your booking for "${btn.dataset.name}"? This action cannot be undone.`;
+        modal.style.display = 'flex';
+    });
+});
+
+document.getElementById('modalClose').addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+
+modal.addEventListener('click', e => {
+    if (e.target === modal) modal.style.display = 'none';
+});
+</script>
+{% endblock %}

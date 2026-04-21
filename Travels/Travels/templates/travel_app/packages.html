@@ -1,0 +1,92 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Travel Packages — WanderLux{% endblock %}
+{% block content %}
+<div style="padding-top:80px;">
+<section class="section-header-page">
+    <div class="page-hero">
+        <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1800" alt="packages" class="page-hero-img">
+        <div class="page-hero-overlay"></div>
+        <div class="page-hero-content">
+            <span class="section-tag">Curated Experiences</span>
+            <h1 style="font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;">Travel <em>Packages</em></h1>
+            <p style="color:rgba(255,255,255,0.7);font-size:16px;margin-top:16px;">From weekend escapes to month-long odysseys — find your perfect journey.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section section-dark">
+    <!-- Filters -->
+    <form method="get" class="filter-bar">
+        <input type="text" name="search" value="{{ search }}" placeholder="Search destinations..." class="form-control" style="max-width:280px;">
+        <input type="number" name="min_price" placeholder="Min price (₹)" class="form-control" style="max-width:160px;">
+        <input type="number" name="max_price" placeholder="Max price (₹)" class="form-control" style="max-width:160px;">
+        <select name="duration" class="form-control" style="max-width:180px;">
+            <option value="">Any duration</option>
+            <option value="3">Up to 3 days</option>
+            <option value="7">Up to 7 days</option>
+            <option value="14">Up to 14 days</option>
+            <option value="30">Up to 30 days</option>
+        </select>
+        <button type="submit" class="btn btn-gold">Filter</button>
+        <a href="{% url 'packages' %}" class="btn btn-dark">Clear</a>
+    </form>
+
+    <div style="color:var(--gray);font-size:13px;margin-bottom:32px;">{{ packages|length }} package{{ packages|length|pluralize }} found</div>
+
+    {% if packages %}
+    <div class="grid-3">
+        {% for pkg in packages %}
+        <div class="card pkg-card">
+            <div class="dest-img-wrap">
+                {% if pkg.image_url %}
+                <img src="{{ pkg.image_url }}" alt="{{ pkg.title }}" class="card-img" style="height:240px;">
+                {% else %}
+                <div class="card-img dest-placeholder" style="height:240px;"><i class="fas fa-suitcase"></i></div>
+                {% endif %}
+                <span class="pkg-duration-badge"><i class="fas fa-clock"></i> {{ pkg.duration_days }} Days</span>
+                {% if pkg.featured %}<span class="dest-category badge badge-gold">Featured</span>{% endif %}
+            </div>
+            <div class="card-body">
+                <div class="dest-location"><i class="fas fa-map-marker-alt" style="color:var(--gold);margin-right:6px;"></i>{{ pkg.destination.name }}, {{ pkg.destination.country }}</div>
+                <div class="card-title" style="font-size:20px;">{{ pkg.title }}</div>
+                <div class="card-text">{{ pkg.description|truncatechars:100 }}</div>
+                <div class="pkg-meta">
+                    <span><i class="fas fa-users"></i> Max {{ pkg.max_group_size }}</span>
+                    <span><i class="fas fa-signal"></i> {{ pkg.get_difficulty_display }}</span>
+                </div>
+                <div class="pkg-footer">
+                    <div>
+                        <div class="card-price">₹{{ pkg.price|floatformat:0 }}</div>
+                        <div style="font-size:11px;color:var(--gray);">per person</div>
+                    </div>
+                    <a href="{% url 'package_detail' pkg.pk %}" class="btn btn-gold btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:80px;color:var(--gray);">
+        <i class="fas fa-search" style="font-size:48px;margin-bottom:20px;opacity:0.3;"></i>
+        <p>No packages found matching your criteria.</p>
+        <a href="{% url 'packages' %}" class="btn btn-outline" style="margin-top:20px;">Browse All</a>
+    </div>
+    {% endif %}
+</section>
+</div>
+
+<style>
+.page-hero{position:relative;height:360px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+.page-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.page-hero-overlay{position:absolute;inset:0;background:rgba(13,13,13,0.65);}
+.page-hero-content{position:relative;z-index:2;}
+.filter-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:32px;padding:24px;background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);}
+.pkg-meta{display:flex;gap:20px;margin-top:12px;font-size:12px;color:var(--gray);}
+.pkg-meta span i{margin-right:5px;color:var(--gold);}
+.dest-img-wrap{position:relative;overflow:hidden;}
+.dest-category{position:absolute;top:14px;left:14px;}
+.pkg-duration-badge{position:absolute;top:14px;right:14px;background:rgba(13,13,13,0.85);color:var(--gold);padding:6px 12px;font-size:11px;font-weight:600;}
+.pkg-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;}
+.dest-placeholder{background:var(--dark-3);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--gray);}
+</style>
+{% endblock %}

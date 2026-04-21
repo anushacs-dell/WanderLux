@@ -1,0 +1,257 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Contact Us — WanderLux{% endblock %}
+{% block content %}
+<div style="padding-top: 80px;">
+
+
+<section class="page-hero">
+    <img src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1800" alt="contact" class="page-hero-img">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+        <span class="section-tag">We'd Love to Hear From You</span>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:white;">Get in <em style="color:var(--gold);font-style:italic;">Touch</em></h1>
+        <p style="color:rgba(255,255,255,0.7);font-size:16px;margin-top:12px;">Our travel experts are here to craft your perfect journey.</p>
+    </div>
+</section>
+
+
+<section class="section section-dark">
+    <div class="contact-layout">
+
+
+        <div class="contact-info">
+            <div class="info-intro">
+                <span class="section-tag">Reach Out</span>
+                <h2 style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;margin:12px 0 16px;">Let's Plan Your <em style="color:var(--gold);font-style:italic;">Dream Trip</em></h2>
+                <p style="color:var(--gray);font-size:14px;line-height:1.9;">Whether you have a specific destination in mind or just a feeling — a desire to wander — our team is ready to turn it into an unforgettable experience.</p>
+            </div>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <div class="info-label">Our Office</div>
+                        <div class="info-value">42 Marine Drive, Fort District<br>Mumbai, Maharashtra 400001</div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div>
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">+91 98765 43210</div>
+                        <div class="info-note">Mon–Sat, 9am–7pm IST</div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <div class="info-label">Email</div>
+                        <div class="info-value">hello@wanderlux.in</div>
+                        <div class="info-note">We reply within 24 hours</div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-headset"></i></div>
+                    <div>
+                        <div class="info-label">24/7 Emergency Support</div>
+                        <div class="info-value">+91 80000 12345</div>
+                        <div class="info-note">For active travelers only</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="contact-social">
+                <div class="info-label" style="margin-bottom:14px;">Follow Our Journey</div>
+                <div style="display:flex;gap:10px;">
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="contact-form-wrap">
+            <div class="form-header">
+                <h3>Send Us a Message</h3>
+                <p>Fill in the details below and we'll get back to you shortly.</p>
+            </div>
+
+            <form method="post" id="contactForm" novalidate>
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Full Name <span class="req">*</span></label>
+                        <input type="text" name="name" class="form-control" placeholder="Your full name"
+                               value="{{ form.name.value|default:'' }}" required>
+                        {% if form.name.errors %}<div class="form-error">{{ form.name.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address <span class="req">*</span></label>
+                        <input type="email" name="email" class="form-control" placeholder="you@example.com"
+                               value="{{ form.email.value|default:'' }}" required>
+                        {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX"
+                               value="{{ form.phone.value|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject <span class="req">*</span></label>
+                        <select name="subject" class="form-control" required>
+                            <option value="">— Select a topic —</option>
+                            <option value="Package Inquiry" {% if form.subject.value == 'Package Inquiry' %}selected{% endif %}>Package Inquiry</option>
+                            <option value="Booking Support" {% if form.subject.value == 'Booking Support' %}selected{% endif %}>Booking Support</option>
+                            <option value="Custom Tour Request" {% if form.subject.value == 'Custom Tour Request' %}selected{% endif %}>Custom Tour Request</option>
+                            <option value="Refund / Cancellation" {% if form.subject.value == 'Refund / Cancellation' %}selected{% endif %}>Refund / Cancellation</option>
+                            <option value="Partnership" {% if form.subject.value == 'Partnership' %}selected{% endif %}>Partnership</option>
+                            <option value="Other" {% if form.subject.value == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                        {% if form.subject.errors %}<div class="form-error">{{ form.subject.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Message <span class="req">*</span></label>
+                    <textarea name="message" rows="6" class="form-control"
+                              placeholder="Tell us about your dream trip, preferred dates, group size, or any questions you have..." required>{{ form.message.value|default:'' }}</textarea>
+                    {% if form.message.errors %}<div class="form-error">{{ form.message.errors.0 }}</div>{% endif %}
+                    <div class="char-count"><span id="charCount">0</span> / 1000 characters</div>
+                </div>
+
+                <div class="interest-tags">
+                    <div class="form-label" style="margin-bottom:10px;">I'm Interested In (optional)</div>
+                    <div class="tags-row">
+                        {% for tag in tags %}
+                        <label class="tag-chip">
+                            <input type="checkbox" name="interests" value="{{ tag }}">
+                            <span>{{ tag }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-gold submit-btn" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+
+<section class="section section-darker">
+    <div class="section-header">
+        <span class="section-tag">Quick Answers</span>
+        <h2 class="section-title">Frequently Asked <em>Questions</em></h2>
+    </div>
+    <div class="faq-grid">
+        <div class="faq-item">
+            <div class="faq-q"><i class="fas fa-chevron-right"></i> How far in advance should I book?</div>
+            <div class="faq-a">We recommend booking at least 2–4 weeks in advance for domestic trips and 6–8 weeks for international packages to secure the best availability and pricing.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><i class="fas fa-chevron-right"></i> Can I customize a package?</div>
+            <div class="faq-a">Absolutely! All our packages can be tailored to your preferences — dates, accommodation type, activities, and more. Contact us with your requirements.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><i class="fas fa-chevron-right"></i> What is the cancellation policy?</div>
+            <div class="faq-a">Pending bookings can be cancelled anytime for a full refund. Confirmed bookings follow the individual package policy — typically 50–100% refund depending on notice period.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><i class="fas fa-chevron-right"></i> Do you offer group discounts?</div>
+            <div class="faq-a">Yes! Groups of 8 or more travelers receive special pricing. Contact our team directly for a custom quote tailored to your group size and destination.</div>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<style>
+/* Page Hero */
+.page-hero { position: relative; height: 360px; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+.page-hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.page-hero-overlay { position: absolute; inset: 0; background: rgba(13,13,13,0.65); }
+.page-hero-content { position: relative; z-index: 2; }
+
+/* Contact layout */
+.contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: start; }
+
+/* Info side */
+.info-intro { margin-bottom: 36px; }
+.info-cards { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+.info-card { display: flex; align-items: flex-start; gap: 18px; padding: 20px 24px; background: var(--dark-3); border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.3s; }
+.info-card:hover { border-color: rgba(201,168,76,0.25); }
+.info-icon { width: 44px; height: 44px; background: rgba(201,168,76,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.info-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.info-value { font-size: 14px; color: var(--white); line-height: 1.6; }
+.info-note { font-size: 12px; color: var(--gray); margin-top: 3px; }
+
+/* Form side */
+.contact-form-wrap { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); padding: 40px; }
+.form-header { margin-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 24px; }
+.form-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 400; margin-bottom: 6px; }
+.form-header p { color: var(--gray); font-size: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 20px; }
+.req { color: var(--gold); }
+.form-error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
+.char-count { font-size: 12px; color: var(--gray); text-align: right; margin-top: 6px; }
+
+/* Interest tags */
+.interest-tags { margin-bottom: 24px; }
+.tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-chip input { display: none; }
+.tag-chip span { display: inline-block; padding: 7px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.1); color: var(--gray); cursor: pointer; transition: all 0.2s; }
+.tag-chip input:checked + span { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+.tag-chip span:hover { border-color: var(--gold); color: var(--gold-light); }
+
+/* Submit */
+.submit-btn { width: 100%; padding: 15px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.submit-btn i { font-size: 13px; }
+
+/* FAQ */
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 960px; margin: 0 auto; }
+.faq-item { padding: 24px 28px; background: var(--dark); border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.3s; }
+.faq-item:hover { border-color: rgba(201,168,76,0.25); }
+.faq-q { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.faq-q i { color: var(--gold); font-size: 11px; }
+.faq-a { font-size: 13px; color: var(--gray); line-height: 1.8; }
+
+@media (max-width: 768px) {
+    .contact-layout { grid-template-columns: 1fr; gap: 40px; }
+    .form-row { grid-template-columns: 1fr; }
+    .faq-grid { grid-template-columns: 1fr; }
+    .contact-form-wrap { padding: 24px; }
+}
+</style>
+
+<script>
+// Character counter
+const msgArea = document.querySelector('textarea[name="message"]');
+const charCount = document.getElementById('charCount');
+if (msgArea) {
+    msgArea.addEventListener('input', function () {
+        const len = this.value.length;
+        charCount.textContent = len;
+        charCount.style.color = len > 900 ? '#e74c3c' : 'var(--gray)';
+        if (len > 1000) this.value = this.value.slice(0, 1000);
+    });
+}
+
+// Submit loading state
+document.getElementById('contactForm')?.addEventListener('submit', function () {
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WanderLux — Luxury Travel Experiences{% endblock %}</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --dark: #0D0D0D;
+            --dark-2: #161616;
+            --dark-3: #1F1F1F;
+            --gray: #9A9A9A;
+            --white: #FAFAF8;
+            --cream: #F5F0E8;
+            --accent: #2D6A4F;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; }
+
+        /* ─── NAVBAR ─────────────────────────────────────────────── */
+        .navbar {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            padding: 20px 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(13,13,13,0.95), transparent);
+            transition: all 0.3s;
+        }
+        .navbar.scrolled {
+            background: rgba(13,13,13,0.98);
+            padding: 14px 60px;
+            border-bottom: 1px solid rgba(201,168,76,0.15);
+        }
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px; font-weight: 600;
+            color: var(--white); text-decoration: none;
+            letter-spacing: 2px;
+        }
+        .nav-logo span { color: var(--gold); }
+        .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+        .nav-links a {
+            color: rgba(250,250,248,0.8); text-decoration: none;
+            font-size: 13px; font-weight: 500; letter-spacing: 1.5px;
+            text-transform: uppercase; transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-cta {
+            background: var(--gold); color: var(--dark) !important;
+            padding: 10px 24px; font-weight: 600 !important;
+        }
+        .nav-cta:hover { background: var(--gold-light); color: var(--dark) !important; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .nav-user span { color: var(--gold); font-size: 13px; }
+
+        /* ─── BUTTONS ─────────────────────────────────────────────── */
+        .btn {
+            display: inline-block; padding: 13px 32px;
+            font-family: 'DM Sans', sans-serif; font-size: 13px;
+            font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+            text-decoration: none; cursor: pointer; border: none;
+            transition: all 0.3s;
+        }
+        .btn-gold { background: var(--gold); color: var(--dark); }
+        .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+        .btn-outline {
+            background: transparent; color: var(--gold);
+            border: 1px solid var(--gold);
+        }
+        .btn-outline:hover { background: var(--gold); color: var(--dark); }
+        .btn-dark { background: var(--dark-3); color: var(--white); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-sm { padding: 8px 18px; font-size: 12px; }
+
+        /* ─── CARDS ─────────────────────────────────────────────── */
+        .card {
+            background: var(--dark-2);
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden; transition: all 0.4s;
+        }
+        .card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-4px); }
+        .card-img { width: 100%; height: 220px; object-fit: cover; }
+        .card-body { padding: 24px; }
+        .card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px; font-weight: 600; margin-bottom: 8px;
+        }
+        .card-text { color: var(--gray); font-size: 14px; line-height: 1.6; }
+        .card-price { color: var(--gold); font-size: 20px; font-weight: 600; margin: 12px 0; }
+
+        /* ─── SECTION STYLES ─────────────────────────────────────── */
+        .section { padding: 100px 60px; }
+        .section-dark { background: var(--dark); }
+        .section-darker { background: var(--dark-2); }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-tag {
+            display: inline-block; color: var(--gold);
+            font-size: 11px; font-weight: 600; letter-spacing: 4px;
+            text-transform: uppercase; margin-bottom: 16px;
+        }
+        .section-title { font-size: 52px; font-weight: 300; line-height: 1.1; }
+        .section-title em { font-style: italic; color: var(--gold); }
+        .section-subtitle { color: var(--gray); font-size: 15px; margin-top: 16px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+        /* ─── GRID ─────────────────────────────────────────────── */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+        /* ─── BADGES ─────────────────────────────────────────────── */
+        .badge {
+            display: inline-block; padding: 4px 12px; font-size: 11px;
+            font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .badge-gold { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+        .badge-green { background: rgba(45,106,79,0.2); color: #52b788; border: 1px solid rgba(45,106,79,0.4); }
+        .badge-red { background: rgba(192,57,43,0.15); color: #e74c3c; border: 1px solid rgba(192,57,43,0.3); }
+        .badge-gray { background: rgba(154,154,154,0.1); color: var(--gray); border: 1px solid rgba(154,154,154,0.2); }
+
+        /* ─── FORMS ─────────────────────────────────────────────── */
+        .form-group { margin-bottom: 24px; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+        .form-control {
+            width: 100%; padding: 13px 16px;
+            background: var(--dark-3); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px;
+            outline: none; transition: border-color 0.3s;
+        }
+        .form-control:focus { border-color: var(--gold); }
+        .form-control::placeholder { color: rgba(154,154,154,0.5); }
+        select.form-control option { background: var(--dark-3); }
+
+        /* ─── MESSAGES ─────────────────────────────────────────────── */
+        .messages-container { position: fixed; top: 80px; right: 20px; z-index: 9999; }
+        .alert {
+            padding: 14px 20px; margin-bottom: 8px; min-width: 280px;
+            font-size: 14px; font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+        .alert-success { background: #1a4a2e; border-left: 3px solid #52b788; color: #8ecaab; }
+        .alert-error { background: #4a1a1a; border-left: 3px solid #e74c3c; color: #f1948a; }
+        .alert-info { background: #1a2d4a; border-left: 3px solid var(--gold); color: var(--gold-light); }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* ─── FOOTER ─────────────────────────────────────────────── */
+        footer {
+            background: var(--dark-2);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 80px 60px 40px;
+        }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
+        .footer-brand-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px; font-weight: 600; margin-bottom: 16px;
+        }
+        .footer-brand-name span { color: var(--gold); }
+        .footer-desc { color: var(--gray); font-size: 14px; line-height: 1.8; margin-bottom: 24px; }
+        .footer-social { display: flex; gap: 12px; }
+        .social-link {
+            width: 38px; height: 38px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--gray); text-decoration: none; font-size: 14px;
+            transition: all 0.3s;
+        }
+        .social-link:hover { border-color: var(--gold); color: var(--gold); }
+        .footer-heading { font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: var(--gray); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--white); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 30px; display: flex; justify-content: space-between; align-items: center; color: var(--gray); font-size: 13px; }
+
+        /* ─── RATING STARS ─────────────────────────────────────────── */
+        .stars { color: var(--gold); }
+
+        /* ─── SCROLLBAR ─────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+        /* ─── RESPONSIVE ─────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .navbar { padding: 16px 20px; }
+            .navbar.scrolled { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .section { padding: 60px 20px; }
+            .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+            .section-title { font-size: 36px; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar" id="navbar">
+    <a href="{% url 'home' %}" class="nav-logo">Wander<span>Lux</span></a>
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'destinations' %}">Destinations</a></li>
+        <li><a href="{% url 'packages' %}">Packages</a></li>
+        <li><a href="{% url 'contact' %}">Contact</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'dashboard' %}">My Trips</a></li>
+            {% if user.is_staff %}
+            <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+            {% endif %}
+            <li class="nav-user"><span>{{ user.first_name|default:user.username }}</span> <a href="{% url 'logout' %}" class="btn btn-outline" style="padding:8px 18px;font-size:11px;">Logout</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Sign In</a></li>
+            <li><a href="{% url 'register' %}" class="btn btn-gold nav-cta">Book Now</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="messages-container">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand-name">Wander<span>Lux</span></div>
+            <p class="footer-desc">Curating extraordinary travel experiences for the discerning explorer. From hidden gems to iconic landmarks, we craft journeys that transcend the ordinary.</p>
+            <div class="footer-social">
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div>
+            <div class="footer-heading">Explore</div>
+            <ul class="footer-links">
+                <li><a href="{% url 'destinations' %}">Destinations</a></li>
+                <li><a href="{% url 'packages' %}">Travel Packages</a></li>
+                <li><a href="#">Honeymoon Tours</a></li>
+                <li><a href="#">Group Travel</a></li>
+                <li><a href="#">Adventure Tours</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-heading">Company</div>
+            <ul class="footer-links">
+                <li><a href="#">About Us</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Press</a></li>
+                <li><a href="#">Partners</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-heading">Newsletter</div>
+            <p style="color:var(--gray);font-size:14px;margin-bottom:16px;line-height:1.6;">Subscribe for exclusive deals and travel inspiration.</p>
+            <form method="post" action="{% url 'subscribe_newsletter' %}">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Your email address" class="form-control" style="margin-bottom:10px;" required>
+                <button type="submit" class="btn btn-gold" style="width:100%;">Subscribe</button>
+            </form>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2025 WanderLux. All rights reserved.</span>
+        <span>Privacy Policy · Terms of Service</span>
+    </div>
+</footer>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+    // Auto-dismiss alerts
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(el => {
+            el.style.transition = 'opacity 0.5s';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 500);
+        });
+    }, 4000);
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

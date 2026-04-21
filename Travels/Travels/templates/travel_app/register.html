@@ -1,0 +1,190 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Create Account — WanderLux{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-bg">
+        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200" alt="bg">
+        <div class="auth-overlay"></div>
+        <div class="auth-bg-text">
+            <div class="abg-tag">Join WanderLux</div>
+            <h2 class="abg-title">Your Next <em>Adventure</em><br>Starts Here</h2>
+            <div class="abg-perks">
+                <div class="abg-perk"><i class="fas fa-check-circle"></i> Exclusive member-only deals</div>
+                <div class="abg-perk"><i class="fas fa-check-circle"></i> Easy booking management</div>
+                <div class="abg-perk"><i class="fas fa-check-circle"></i> 24/7 travel support</div>
+                <div class="abg-perk"><i class="fas fa-check-circle"></i> Earn loyalty rewards</div>
+            </div>
+        </div>
+    </div>
+    <div class="auth-form-wrap">
+        <a href="{% url 'home' %}" class="auth-logo">Wander<span>Lux</span></a>
+        <h2>Create Account</h2>
+        <p class="auth-sub">Start your luxury travel journey today</p>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" name="first_name" class="form-control" placeholder="John"
+                           value="{{ form.first_name.value|default:'' }}" required>
+                    {% if form.first_name.errors %}<div class="form-error">{{ form.first_name.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" placeholder="Doe"
+                           value="{{ form.last_name.value|default:'' }}" required>
+                    {% if form.last_name.errors %}<div class="form-error">{{ form.last_name.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="john@example.com"
+                       value="{{ form.email.value|default:'' }}" required>
+                {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose a username"
+                       value="{{ form.username.value|default:'' }}" required>
+                {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="input-eye-wrap">
+                        <input type="password" name="password1" id="pw1" class="form-control" placeholder="Min 8 characters" required>
+                        <button type="button" class="eye-btn" onclick="togglePw('pw1',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                    {% if form.password1.errors %}<div class="form-error">{{ form.password1.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <div class="input-eye-wrap">
+                        <input type="password" name="password2" id="pw2" class="form-control" placeholder="Repeat password" required>
+                        <button type="button" class="eye-btn" onclick="togglePw('pw2',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                    {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <!-- Password strength indicator -->
+            <div class="pw-strength" id="pwStrength" style="display:none;">
+                <div class="pw-strength-label">Password strength: <span id="pwStrengthText">—</span></div>
+                <div class="pw-strength-bar"><div id="pwStrengthFill"></div></div>
+            </div>
+
+            <div class="terms-check">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+            </div>
+
+            <button type="submit" class="btn btn-gold" style="width:100%;margin-top:20px;padding:15px;font-size:14px;">
+                Create My Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Sign in</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-page { display: grid; grid-template-columns: 1fr 520px; min-height: 100vh; }
+
+/* Left side */
+.auth-bg { position: relative; overflow: hidden; }
+.auth-bg img { width: 100%; height: 100%; object-fit: cover; }
+.auth-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,13,13,0.75) 0%, rgba(13,13,13,0.5) 100%); }
+.auth-bg-text { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px; z-index: 2; }
+.abg-tag { font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+.abg-title { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; line-height: 1.1; color: white; margin-bottom: 36px; }
+.abg-title em { font-style: italic; color: var(--gold); }
+.abg-perks { display: flex; flex-direction: column; gap: 14px; }
+.abg-perk { font-size: 14px; color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 12px; }
+.abg-perk i { color: var(--gold); font-size: 13px; }
+
+/* Right side */
+.auth-form-wrap {
+    background: var(--dark-2);
+    padding: 48px 52px;
+    display: flex; flex-direction: column; justify-content: center;
+    overflow-y: auto;
+}
+.auth-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--white); text-decoration: none; margin-bottom: 32px; display: block; }
+.auth-logo span { color: var(--gold); }
+.auth-form-wrap h2 { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; margin-bottom: 6px; }
+.auth-sub { color: var(--gray); font-size: 14px; margin-bottom: 28px; }
+.auth-footer { margin-top: 20px; text-align: center; color: var(--gray); font-size: 14px; }
+.auth-footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
+
+/* Form layout */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 18px; }
+.form-error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
+
+/* Password eye toggle */
+.input-eye-wrap { position: relative; }
+.input-eye-wrap .form-control { padding-right: 44px; }
+.eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--gray); cursor: pointer; font-size: 14px; padding: 0; transition: color 0.2s; }
+.eye-btn:hover { color: var(--gold); }
+
+/* Strength bar */
+.pw-strength { margin-bottom: 16px; }
+.pw-strength-label { font-size: 12px; color: var(--gray); margin-bottom: 6px; }
+#pwStrengthText { font-weight: 600; }
+.pw-strength-bar { height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+#pwStrengthFill { height: 100%; width: 0%; transition: width 0.4s, background 0.4s; border-radius: 2px; }
+
+/* Terms */
+.terms-check { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--gray); margin-top: 4px; }
+.terms-check input[type="checkbox"] { margin-top: 2px; accent-color: var(--gold); width: 15px; height: 15px; flex-shrink: 0; }
+.terms-check a { color: var(--gold); text-decoration: none; }
+
+@media (max-width: 900px) {
+    .auth-page { grid-template-columns: 1fr; }
+    .auth-bg { display: none; }
+    .auth-form-wrap { padding: 100px 24px 40px; }
+    .form-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.innerHTML = isText ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+}
+
+// Password strength
+document.getElementById('pw1').addEventListener('input', function () {
+    const val = this.value;
+    const bar = document.getElementById('pwStrengthFill');
+    const text = document.getElementById('pwStrengthText');
+    const wrap = document.getElementById('pwStrength');
+    if (!val) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const levels = [
+        { pct: '25%', color: '#e74c3c', label: 'Weak' },
+        { pct: '50%', color: '#e67e22', label: 'Fair' },
+        { pct: '75%', color: '#f1c40f', label: 'Good' },
+        { pct: '100%', color: '#52b788', label: 'Strong' },
+    ];
+    const lvl = levels[score - 1] || levels[0];
+    bar.style.width = lvl.pct;
+    bar.style.background = lvl.color;
+    text.textContent = lvl.label;
+    text.style.color = lvl.color;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}{{ package.title }} — WanderLux{% endblock %}
+{% block content %}
+<div style="padding-top:80px;">
+
+<section class="pkg-hero">
+    {% if package.image_url %}
+    <img src="{{ package.image_url }}" alt="{{ package.title }}" class="pkg-hero-img">
+    {% else %}
+    <div class="pkg-hero-img" style="background:var(--dark-3);display:flex;align-items:center;justify-content:center;font-size:80px;color:var(--gray);"><i class="fas fa-suitcase"></i></div>
+    {% endif %}
+    <div class="pkg-hero-overlay"></div>
+    <div class="pkg-hero-content">
+        <span class="section-tag">{{ package.destination.get_category_display }}</span>
+        <h1>{{ package.title }}</h1>
+        <div class="pkg-hero-meta">
+            <span><i class="fas fa-map-marker-alt"></i> {{ package.destination.name }}, {{ package.destination.country }}</span>
+            <span><i class="fas fa-clock"></i> {{ package.duration_days }} Days</span>
+            <span><i class="fas fa-users"></i> Max {{ package.max_group_size }} people</span>
+            <span><i class="fas fa-signal"></i> {{ package.get_difficulty_display }}</span>
+            <span class="stars">★ {{ avg_rating }}/5 ({{ reviews|length }} reviews)</span>
+        </div>
+    </div>
+</section>
+
+<section class="section section-dark">
+    <div class="pkg-layout">
+        <!-- Left: Details -->
+        <div class="pkg-main">
+            <div class="pkg-section">
+                <h2 class="pkg-section-title">About This Package</h2>
+                <p style="color:var(--gray);line-height:1.9;font-size:15px;">{{ package.description }}</p>
+            </div>
+
+            {% if package.itinerary %}
+            <div class="pkg-section">
+                <h2 class="pkg-section-title">Itinerary</h2>
+                <div class="itinerary-text" style="color:var(--gray);line-height:1.9;white-space:pre-line;font-size:14px;">{{ package.itinerary }}</div>
+            </div>
+            {% endif %}
+
+            <div class="pkg-includes-grid">
+                {% if package.get_includes_list %}
+                <div class="pkg-section">
+                    <h2 class="pkg-section-title"><i class="fas fa-check-circle" style="color:#52b788;"></i> Included</h2>
+                    <ul class="inc-list">
+                        {% for item in package.get_includes_list %}
+                        <li><i class="fas fa-check" style="color:#52b788;margin-right:8px;"></i>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if package.get_excludes_list %}
+                <div class="pkg-section">
+                    <h2 class="pkg-section-title"><i class="fas fa-times-circle" style="color:#e74c3c;"></i> Not Included</h2>
+                    <ul class="inc-list">
+                        {% for item in package.get_excludes_list %}
+                        <li><i class="fas fa-times" style="color:#e74c3c;margin-right:8px;"></i>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Reviews -->
+            <div class="pkg-section">
+                <h2 class="pkg-section-title">Reviews ({{ reviews|length }})</h2>
+                {% if reviews %}
+                <div class="reviews-list">
+                    {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">{{ review.user.first_name.0|default:review.user.username.0|upper }}</div>
+                            <div>
+                                <div style="font-weight:600;">{{ review.user.get_full_name|default:review.user.username }}</div>
+                                <div class="stars" style="font-size:13px;">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                            </div>
+                            <div style="margin-left:auto;color:var(--gray);font-size:12px;">{{ review.created_at|date:"M d, Y" }}</div>
+                        </div>
+                        <div style="font-weight:600;margin-bottom:6px;">{{ review.title }}</div>
+                        <div style="color:var(--gray);font-size:14px;line-height:1.7;">{{ review.comment }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color:var(--gray);">No reviews yet. Be the first to review!</p>
+                {% endif %}
+
+                {% if user.is_authenticated and user_booked %}
+                <div class="review-form-wrap">
+                    <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:20px;">Write a Review</h3>
+                    <form method="post" action="{% url 'add_review' package.pk %}">
+                        {% csrf_token %}
+                        <div class="grid-2" style="gap:16px;margin-bottom:16px;">
+                            <div class="form-group" style="margin:0;">
+                                <label class="form-label">Rating</label>
+                                <select name="rating" class="form-control">
+                                    <option value="5">★★★★★ Excellent</option>
+                                    <option value="4">★★★★ Very Good</option>
+                                    <option value="3">★★★ Good</option>
+                                    <option value="2">★★ Fair</option>
+                                    <option value="1">★ Poor</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label class="form-label">Review Title</label>
+                                <input type="text" name="title" placeholder="Sum up your experience" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Your Review</label>
+                            <textarea name="comment" rows="4" placeholder="Share your experience..." class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Submit Review</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Booking Sidebar -->
+        <div class="pkg-sidebar">
+            <div class="booking-card">
+                <div class="booking-price">
+                    <span class="price-amount">₹{{ package.price|floatformat:0 }}</span>
+                    <span class="price-per">per person</span>
+                </div>
+                <div class="booking-meta">
+                    <div class="bm-item"><i class="fas fa-clock"></i> {{ package.duration_days }} Days / {{ package.duration_days|add:"-1" }} Nights</div>
+                    <div class="bm-item"><i class="fas fa-users"></i> Max {{ package.max_group_size }} travelers</div>
+                    <div class="bm-item"><i class="fas fa-signal"></i> {{ package.get_difficulty_display }} difficulty</div>
+                </div>
+                <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:20px 0;">
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'book_package' package.pk %}" id="bookingForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Travel Date</label>
+                        <input type="date" name="travel_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Number of Travelers</label>
+                        <input type="number" name="num_travelers" min="1" max="{{ package.max_group_size }}" value="1" class="form-control" id="numTravelers" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Special Requests</label>
+                        <textarea name="special_requests" rows="3" class="form-control" placeholder="Any special requirements..."></textarea>
+                    </div>
+                    <div class="total-display">
+                        <span>Total:</span>
+                        <span id="totalPrice">₹{{ package.price|floatformat:0 }}</span>
+                    </div>
+                    <button type="submit" class="btn btn-gold" style="width:100%;margin-top:16px;font-size:14px;padding:15px;">Confirm Booking</button>
+                </form>
+                {% else %}
+                <p style="color:var(--gray);font-size:14px;text-align:center;margin-bottom:16px;">Please log in to book this package.</p>
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-gold" style="width:100%;text-align:center;display:block;">Sign In to Book</a>
+                <a href="{% url 'register' %}" class="btn btn-outline" style="width:100%;text-align:center;display:block;margin-top:10px;">Create Account</a>
+                {% endif %}
+            </div>
+
+            <div class="help-card">
+                <h4><i class="fas fa-headset" style="color:var(--gold);margin-right:8px;"></i> Need Help?</h4>
+                <p>Our travel experts are available 24/7 to assist you.</p>
+                <a href="{% url 'contact' %}" class="btn btn-outline btn-sm" style="margin-top:12px;display:inline-block;">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+<style>
+.pkg-hero{position:relative;height:480px;display:flex;align-items:flex-end;overflow:hidden;}
+.pkg-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.pkg-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,13,1) 0%,rgba(13,13,13,0.3) 100%);}
+.pkg-hero-content{position:relative;z-index:2;padding:0 60px 48px;}
+.pkg-hero-content h1{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;margin:8px 0 16px;}
+.pkg-hero-meta{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,0.7);}
+.pkg-hero-meta span i{margin-right:6px;color:var(--gold);}
+.pkg-layout{display:grid;grid-template-columns:1fr 360px;gap:48px;}
+.pkg-main{}
+.pkg-section{margin-bottom:48px;}
+.pkg-section-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:20px;color:var(--white);}
+.pkg-section-title i{margin-right:10px;}
+.pkg-includes-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:48px;}
+.inc-list{list-style:none;color:var(--gray);font-size:14px;}
+.inc-list li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.reviews-list{display:flex;flex-direction:column;gap:20px;margin-bottom:32px;}
+.review-card{padding:24px;background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);}
+.review-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.reviewer-avatar{width:40px;height:40px;background:var(--gold);color:var(--dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;}
+.review-form-wrap{padding:32px;background:var(--dark-2);border:1px solid rgba(201,168,76,0.2);margin-top:32px;}
+.booking-card{background:var(--dark-2);border:1px solid rgba(201,168,76,0.2);padding:32px;position:sticky;top:100px;}
+.booking-price{margin-bottom:20px;}
+.price-amount{font-family:'Cormorant Garamond',serif;font-size:44px;color:var(--gold);}
+.price-per{font-size:13px;color:var(--gray);margin-left:8px;}
+.booking-meta{display:flex;flex-direction:column;gap:10px;}
+.bm-item{font-size:13px;color:var(--gray);}
+.bm-item i{color:var(--gold);margin-right:10px;width:14px;}
+.total-display{display:flex;justify-content:space-between;font-weight:600;font-size:16px;padding:16px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);}
+#totalPrice{color:var(--gold);}
+.help-card{padding:24px;background:var(--dark-2);border:1px solid rgba(255,255,255,0.06);margin-top:20px;}
+.help-card h4{font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:8px;}
+.help-card p{color:var(--gray);font-size:13px;}
+@media(max-width:768px){.pkg-layout{grid-template-columns:1fr;}.pkg-hero-content{padding:0 20px 32px;}.pkg-hero-content h1{font-size:32px;}.pkg-includes-grid{grid-template-columns:1fr;}.pkg-hero-meta{gap:12px;}}
+</style>
+<script>
+const price = {{ package.price }};
+document.getElementById('numTravelers')?.addEventListener('input', function(){
+    document.getElementById('totalPrice').textContent = '₹' + (price * parseInt(this.value || 1)).toLocaleString('en-IN');
+});
+</script>
+{% endblock %}

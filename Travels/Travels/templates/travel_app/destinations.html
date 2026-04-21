@@ -1,0 +1,84 @@
+{% extends 'travel_app/base.html' %}
+{% block title %}Destinations — WanderLux{% endblock %}
+{% block content %}
+<div style="padding-top:80px;">
+<section class="page-hero">
+    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1800" alt="destinations" class="page-hero-img">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+        <span class="section-tag">Around the World</span>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;">Our <em>Destinations</em></h1>
+    </div>
+</section>
+
+<section class="section section-dark">
+    <!-- Category filters -->
+    <div class="cat-filters">
+        <a href="{% url 'destinations' %}" class="cat-filter {% if not selected_category %}active{% endif %}">All</a>
+        {% for val, label in categories %}
+        <a href="?category={{ val }}" class="cat-filter {% if selected_category == val %}active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Search -->
+    <form method="get" class="dest-search">
+        <input type="hidden" name="category" value="{{ selected_category }}">
+        <input type="text" name="search" value="{{ search }}" placeholder="Search destinations..." class="form-control" style="max-width:360px;">
+        <button type="submit" class="btn btn-gold">Search</button>
+    </form>
+
+    {% if destinations %}
+    <div class="grid-3">
+        {% for dest in destinations %}
+        <a href="{% url 'destination_detail' dest.pk %}" class="card dest-card" style="text-decoration:none;color:inherit;">
+            <div class="dest-img-wrap">
+                {% if dest.image_url %}
+                <img src="{{ dest.image_url }}" alt="{{ dest.name }}" class="card-img" style="height:260px;">
+                {% else %}
+                <div class="card-img dest-placeholder" style="height:260px;"><i class="fas fa-map-marker-alt"></i></div>
+                {% endif %}
+                <span class="dest-category badge badge-gold">{{ dest.get_category_display }}</span>
+                <div class="dest-hover-overlay">
+                    <span class="btn btn-gold btn-sm">Explore</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="dest-location"><i class="fas fa-map-marker-alt" style="color:var(--gold);margin-right:6px;font-size:11px;"></i>{{ dest.country }}</div>
+                <div class="card-title">{{ dest.name }}</div>
+                <div class="card-text">{{ dest.short_description|default:dest.description|truncatechars:110 }}</div>
+                <div class="dest-footer">
+                    <span class="stars">★ {{ dest.rating }}</span>
+                    <span style="font-size:12px;color:var(--gold);">{{ dest.packages.count }} packages →</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:80px;color:var(--gray);">
+        <i class="fas fa-globe" style="font-size:48px;margin-bottom:20px;opacity:0.3;display:block;"></i>
+        <p>No destinations found.</p>
+        <a href="{% url 'destinations' %}" class="btn btn-outline" style="margin-top:20px;">View All</a>
+    </div>
+    {% endif %}
+</section>
+</div>
+
+<style>
+.page-hero{position:relative;height:360px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+.page-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.page-hero-overlay{position:absolute;inset:0;background:rgba(13,13,13,0.6);}
+.page-hero-content{position:relative;z-index:2;}
+.cat-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+.cat-filter{padding:8px 20px;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--gray);border:1px solid rgba(255,255,255,0.1);transition:all 0.3s;}
+.cat-filter:hover,.cat-filter.active{color:var(--dark);background:var(--gold);border-color:var(--gold);}
+.dest-search{display:flex;gap:12px;margin-bottom:36px;}
+.dest-img-wrap{position:relative;overflow:hidden;}
+.dest-category{position:absolute;top:14px;left:14px;}
+.dest-hover-overlay{position:absolute;inset:0;background:rgba(13,13,13,0.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;}
+.dest-card:hover .dest-hover-overlay{opacity:1;}
+.dest-location{font-size:12px;color:var(--gray);margin-bottom:6px;}
+.dest-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+.dest-placeholder{background:var(--dark-3);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--gray);}
+</style>
+{% endblock %}
