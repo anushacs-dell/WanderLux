@@ -1,2 +1,2 @@
 # WanderLux
-A full-featured Travel Booking System,  allowing users to explore destinations, book travel packages, and manage trips.
+A full-stack travel booking web application built using Django. This platform allows users to explore destinations, browse travel packages, and make bookings, while administrators can manage content.
